@@ -67,6 +67,13 @@ pub enum Key {
 	NumKeys,
 }
 
+pub fn enumerate_with_keys<T>(array: &[T; NUMBER_OF_KEYS]) -> impl Iterator<Item = (Key, &T)> {
+	array.iter().enumerate().map(|(i, t)| {
+		let key = unsafe { std::mem::transmute_copy::<usize, Key>(&i) };
+		(key, t)
+	})
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct BitVector<const LENGTH: usize>([StorageType; LENGTH]);
 

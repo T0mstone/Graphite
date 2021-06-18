@@ -198,16 +198,14 @@ impl InputMapper {
 			.flatten()
 			.filter(|a| !matches!(*a, MessageDiscriminant::Tool(ToolMessageDiscriminant::SelectTool) | MessageDiscriminant::Global(_)))
 			.collect();
-		self.mapping
-			.down
-			.iter()
-			.enumerate()
-			.filter_map(|(i, m)| {
+
+		super::keyboard::enumerate_with_keys(&self.mapping.down)
+			.filter_map(|(k, m)| {
 				let ma =
 					m.0.iter()
 						.find_map(|m| actions.iter().find_map(|a| (a == &m.action.to_discriminant()).then(|| m.action.to_discriminant())));
 
-				ma.map(|a| unsafe { (std::mem::transmute_copy::<usize, Key>(&i), a) })
+				ma.map(|a| (k, a) )
 			})
 			.for_each(|(k, a)| {
 				let _ = write!(output, "{}: {}, ", k.to_discriminant().local_name(), a.local_name().split('.').last().unwrap());
